@@ -40,6 +40,7 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.raywenderlich.android.movieapp.MovieApplication.Companion.application
 import com.raywenderlich.android.movieapp.R
@@ -83,7 +84,10 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list),
   }
 
   private fun initialiseObservers() {
-    //TODO Observe LiveData
+    mainViewModel.searchMoviesLiveData.observe (viewLifecycleOwner, Observer {
+      movieAdapter.updateData (it)
+    })
+
   }
 
   private fun initialiseUIElements() {

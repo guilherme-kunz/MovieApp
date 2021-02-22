@@ -34,6 +34,7 @@
 
 package com.raywenderlich.android.movieapp.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raywenderlich.android.movieapp.framework.network.MovieRepository
@@ -49,6 +50,7 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
 
   private var debouncePeriod: Long = 500
   private var searchJob: Job? = null
+  val searchMoviesLiveData = MutableLiveData <List <Movie>> ()
 
   fun onFragmentReady() {
     //TODO Fetch Popular Movies
@@ -59,7 +61,7 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
     searchJob = viewModelScope.launch {
       delay(debouncePeriod)
       if (query.length > 2) {
-        //TODO fetch movies by search query
+        fetchMovieByQuery (query)
       }
     }
   }
@@ -73,7 +75,7 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
   private fun fetchMovieByQuery(query: String) {
     viewModelScope.launch(Dispatchers.IO) {
       val movies = repository.fetchMovieByQuery(query)
-      // TODO: Update asynchronously
+      searchMoviesLiveData.postValue (movies)
     }
   }
 
