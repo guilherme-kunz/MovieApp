@@ -34,9 +34,7 @@
 
 package com.raywenderlich.android.movieapp.ui
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.raywenderlich.android.movieapp.framework.network.MovieRepository
 import com.raywenderlich.android.movieapp.framework.network.model.Movie
 import com.raywenderlich.android.movieapp.ui.movies.MovieLoadingState
@@ -48,7 +46,18 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
 
   private var debouncePeriod: Long = 500
   private var searchJob: Job? = null
-  val searchMoviesLiveData = MutableLiveData <List <Movie>> ()
+  //1
+  var searchMoviesLiveData: LiveData<List<Movie>>
+  //2
+  private val _searchFieldTextLiveData = MutableLiveData<String>()
+
+  //3
+  init {
+    searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
+      fetchMovieByQuery(it)
+    }
+  }
+
   val movieLoadingStateLiveData = MutableLiveData <MovieLoadingState> ()
 
   fun onFragmentReady() {
@@ -60,7 +69,8 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
     searchJob = viewModelScope.launch {
       delay(debouncePeriod)
       if (query.length > 2) {
-        fetchMovieByQuery (query)
+        //4
+        _searchFieldTextLiveData.value = query
       }
     }
   }
@@ -71,26 +81,18 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
     }
   }
 
-  private fun fetchMovieByQuery(query: String) {
+  //1
+  private fun fetchMovieByQuery(query: String): LiveData<List<Movie>> {
+    //2
+    val liveData = MutableLiveData<List<Movie>>()
     viewModelScope.launch(Dispatchers.IO) {
-      try {
-        //1
-        withContext(Dispatchers.Main) {
-          movieLoadingStateLiveData.value = MovieLoadingState.LOADING
-        }
-
-        val movies = repository.fetchMovieByQuery(query)
-        searchMoviesLiveData.postValue(movies)
-
-        //2
-        movieLoadingStateLiveData.postValue(MovieLoadingState.LOADED)
-      } catch (e: Exception) {
-        //3
-        movieLoadingStateLiveData.postValue(MovieLoadingState.INVALID_API_KEY)
-      }
+      val movies = repository.fetchMovieByQuery(query)
+      //3
+      liveData.postValue(movies)
     }
+    //4
+    return liveData
   }
-
 
   fun onMovieClicked(movie: Movie) {
     // TODO handle navigation to details screen event
