@@ -86,6 +86,9 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list),
   private fun initialiseObservers() {
     mainViewModel.searchMoviesLiveData.observe (viewLifecycleOwner, Observer {
       movieAdapter.updateData (it)
+      mainViewModel.movieLoadingStateLiveData.observe(viewLifecycleOwner, Observer {
+        onMovieLoadingStateChanged(it)
+      })
     })
 
   }

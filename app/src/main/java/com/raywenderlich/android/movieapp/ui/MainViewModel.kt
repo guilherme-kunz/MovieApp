@@ -39,10 +39,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raywenderlich.android.movieapp.framework.network.MovieRepository
 import com.raywenderlich.android.movieapp.framework.network.model.Movie
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.raywenderlich.android.movieapp.ui.movies.MovieLoadingState
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(private val repository: MovieRepository) :
@@ -51,6 +49,7 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
   private var debouncePeriod: Long = 500
   private var searchJob: Job? = null
   val searchMoviesLiveData = MutableLiveData <List <Movie>> ()
+  val movieLoadingStateLiveData = MutableLiveData <MovieLoadingState> ()
 
   fun onFragmentReady() {
     //TODO Fetch Popular Movies
@@ -74,10 +73,24 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
 
   private fun fetchMovieByQuery(query: String) {
     viewModelScope.launch(Dispatchers.IO) {
-      val movies = repository.fetchMovieByQuery(query)
-      searchMoviesLiveData.postValue (movies)
+      try {
+        //1
+        withContext(Dispatchers.Main) {
+          movieLoadingStateLiveData.value = MovieLoadingState.LOADING
+        }
+
+        val movies = repository.fetchMovieByQuery(query)
+        searchMoviesLiveData.postValue(movies)
+
+        //2
+        movieLoadingStateLiveData.postValue(MovieLoadingState.LOADED)
+      } catch (e: Exception) {
+        //3
+        movieLoadingStateLiveData.postValue(MovieLoadingState.INVALID_API_KEY)
+      }
     }
   }
+
 
   fun onMovieClicked(movie: Movie) {
     // TODO handle navigation to details screen event
