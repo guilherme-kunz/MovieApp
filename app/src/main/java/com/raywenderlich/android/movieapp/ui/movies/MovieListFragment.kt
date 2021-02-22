@@ -133,8 +133,15 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list),
         loadingProgressBar.visibility = View.VISIBLE
       }
       MovieLoadingState.LOADED -> {
-        statusButton.visibility = View.GONE
-        moviesRecyclerView.visibility = View.VISIBLE
+        connectivityLiveData.value?.let {
+          if (it) {
+            statusButton.visibility = View.GONE
+            moviesRecyclerView.visibility = View.VISIBLE
+          } else {
+            statusButton.visibility = View.VISIBLE
+            moviesRecyclerView.visibility = View.GONE
+          }
+        }
         loadingProgressBar.visibility = View.GONE
       }
       MovieLoadingState.ERROR -> {
