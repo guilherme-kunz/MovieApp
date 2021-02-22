@@ -51,6 +51,10 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
   val movieLoadingStateLiveData = MutableLiveData <MovieLoadingState> ()
   private val _popularMoviesLiveData = MutableLiveData<List<Movie>>()
   val moviesMediatorData = MediatorLiveData<List<Movie>>()
+  private val _navigateToDetails = MutableLiveData<String>()
+  val navigateToDetails: LiveData<String>
+    get() = _navigateToDetails
+
 
   init {
     _searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
@@ -70,13 +74,11 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
     }
   }
 
-
   fun onSearchQuery(query: String) {
     searchJob?.cancel()
     searchJob = viewModelScope.launch {
       delay(debouncePeriod)
       if (query.length > 2) {
-        //4
         _searchFieldTextLiveData.value = query
       }
     }
@@ -95,21 +97,19 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
     }
   }
 
-  //1
   private fun fetchMovieByQuery(query: String): LiveData<List<Movie>> {
-    //2
     val liveData = MutableLiveData<List<Movie>>()
     viewModelScope.launch(Dispatchers.IO) {
       val movies = repository.fetchMovieByQuery(query)
-      //3
       liveData.postValue(movies)
     }
-    //4
     return liveData
   }
 
   fun onMovieClicked(movie: Movie) {
-    // TODO handle navigation to details screen event
+    movie.title?.let {
+      _navigateToDetails.value = it
+    }
   }
 
   override fun onCleared() {
