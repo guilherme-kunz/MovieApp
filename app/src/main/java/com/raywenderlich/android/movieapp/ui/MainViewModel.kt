@@ -46,22 +46,26 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
 
   private var debouncePeriod: Long = 500
   private var searchJob: Job? = null
-  //1
-  var searchMoviesLiveData: LiveData<List<Movie>>
-  //2
+  private var _searchMoviesLiveData: LiveData<List<Movie>>
   private val _searchFieldTextLiveData = MutableLiveData<String>()
+  val movieLoadingStateLiveData = MutableLiveData <MovieLoadingState> ()
+  private val _popularMoviesLiveData = MutableLiveData<List<Movie>>()
+  val moviesMediatorData = MediatorLiveData<List<Movie>>()
 
-  //3
   init {
-    searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
+    _searchMoviesLiveData = Transformations.switchMap(_searchFieldTextLiveData) {
       fetchMovieByQuery(it)
+    }
+    moviesMediatorData.addSource(_popularMoviesLiveData) {
+      moviesMediatorData.value = it
+    }
+    moviesMediatorData.addSource(_searchMoviesLiveData) {
+      moviesMediatorData.value = it
     }
   }
 
-  val movieLoadingStateLiveData = MutableLiveData <MovieLoadingState> ()
-
   fun onFragmentReady() {
-    //TODO Fetch Popular Movies
+    fetchPopularMovies()
   }
 
   fun onSearchQuery(query: String) {
@@ -76,8 +80,15 @@ class MainViewModel @Inject constructor(private val repository: MovieRepository)
   }
 
   private fun fetchPopularMovies() {
+    movieLoadingStateLiveData.value = MovieLoadingState.LOADING
     viewModelScope.launch(Dispatchers.IO) {
-      val movies = repository.fetchPopularMovies()
+      try {
+        val movies = repository.fetchPopularMovies()
+        _popularMoviesLiveData.postValue(movies)
+        movieLoadingStateLiveData.postValue(MovieLoadingState.LOADED)
+      } catch (e: Exception) {
+        movieLoadingStateLiveData.postValue(MovieLoadingState.INVALID_API_KEY)
+      }
     }
   }
 
