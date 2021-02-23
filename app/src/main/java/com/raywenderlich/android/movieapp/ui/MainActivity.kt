@@ -51,35 +51,35 @@ import javax.inject.Inject
  */
 class MainActivity : AppCompatActivity() {
 
-  private lateinit var mainViewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
 
-  @Inject
-  lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    // Switch to AppTheme for displaying the activity
-    setTheme(R.style.AppTheme)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Switch to AppTheme for displaying the activity
+        setTheme(R.style.AppTheme)
 
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-    MovieApplication.application.appComponent.inject(this)
-    mainViewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
-  }
-
-  override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    val inflater: MenuInflater = menuInflater
-    inflater.inflate(R.menu.main_menu, menu)
-    return true
-  }
-
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    return when (item.itemId) {
-      R.id.aboutMenuItem -> {
-        startActivity(Intent(this, AboutDialogActivity::class.java))
-        true
-      }
-      else -> super.onOptionsItemSelected(item)
+        MovieApplication.application.appComponent.inject(this)
+        mainViewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
-  }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+          R.id.aboutMenuItem -> {
+            startActivity(Intent(this, AboutDialogActivity::class.java))
+            true
+          }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }

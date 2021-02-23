@@ -51,52 +51,52 @@ private const val TMDb_API_KEY = "ff8fb9dee660f60289aa33b24f3c35be"
 @Module
 class MovieApiModule {
 
-  @Provides
-  @Singleton
-  fun provideInterceptor(): Interceptor {
-    return Interceptor { chain ->
-      val newUrl = chain.request().url()
-          .newBuilder()
-          .addQueryParameter("api_key", TMDb_API_KEY)
-          .build()
+    @Provides
+    @Singleton
+    fun provideInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val newUrl = chain.request().url()
+                    .newBuilder()
+                    .addQueryParameter("api_key", TMDb_API_KEY)
+                    .build()
 
-      val newRequest = chain.request()
-          .newBuilder()
-          .url(newUrl)
-          .build()
+            val newRequest = chain.request()
+                    .newBuilder()
+                    .url(newUrl)
+                    .build()
 
-      chain.proceed(newRequest)
+            chain.proceed(newRequest)
+        }
     }
-  }
 
-  @Provides
-  @Singleton
-  fun provideWeatherApiClient(authInterceptor: Interceptor): OkHttpClient {
-    return OkHttpClient().newBuilder()
-        .addInterceptor(authInterceptor)
-        .build()
-  }
+    @Provides
+    @Singleton
+    fun provideWeatherApiClient(authInterceptor: Interceptor): OkHttpClient {
+        return OkHttpClient().newBuilder()
+                .addInterceptor(authInterceptor)
+                .build()
+    }
 
-  @Provides
-  @Singleton
-  fun provideMoshi(): Moshi {
-    return Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-  }
+    @Provides
+    @Singleton
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    }
 
-  @Provides
-  @Singleton
-  fun provideRetrofit(moshi: Moshi, randomUserApiClient: OkHttpClient): Retrofit {
-    return Retrofit.Builder()
-        .client(randomUserApiClient)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .baseUrl(BASE_URL)
-        .build()
-  }
+    @Provides
+    @Singleton
+    fun provideRetrofit(moshi: Moshi, randomUserApiClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+                .client(randomUserApiClient)
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .baseUrl(BASE_URL)
+                .build()
+    }
 
-  @Provides
-  @Singleton
-  fun providesWeatherApi(retrofit: Retrofit): MovieService {
-    return retrofit.create(MovieService::class.java)
-  }
+    @Provides
+    @Singleton
+    fun providesWeatherApi(retrofit: Retrofit): MovieService {
+        return retrofit.create(MovieService::class.java)
+    }
 }

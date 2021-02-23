@@ -42,7 +42,7 @@ import javax.inject.Singleton
 @Module
 class AppModule(private val movieApplication: Application) {
 
-  @Provides
-  @Singleton
-  fun provideContext(): Application = movieApplication
+    @Provides
+    @Singleton
+    fun provideContext(): Application = movieApplication
 }

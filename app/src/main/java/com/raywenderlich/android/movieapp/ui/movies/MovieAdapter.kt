@@ -45,63 +45,63 @@ import com.raywenderlich.android.movieapp.framework.network.model.Movie
 import kotlinx.android.synthetic.main.line_item_movie.view.*
 
 class MovieAdapter(
-    private val moviesClickListener: MoviesClickListener) :
-    RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+        private val moviesClickListener: MoviesClickListener) :
+        RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
-  private var data = mutableListOf<Movie?>()
+    private var data = mutableListOf<Movie?>()
 
-  interface MoviesClickListener {
-    fun onMovieClicked(movie: Movie)
-  }
-
-  val requestOptions: RequestOptions by lazy {
-    RequestOptions()
-        .error(R.drawable.no_internet)
-        .placeholder(R.drawable.ic_movie_placeholder)
-  }
-
-  fun updateData(newData: List<Movie?>) {
-    data.clear()
-    data.addAll(newData)
-    notifyDataSetChanged()
-  }
-
-  inner class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    fun bind(movie: Movie?) {
-      itemView.titleTextView.text = movie?.title
-      itemView.overviewTextView.text = movie?.overview
-
-      Glide.with(itemView.context)
-          .applyDefaultRequestOptions(requestOptions)
-          .load("${POSTER_IMAGE_PATH_PREFIX}${movie?.posterPath}")
-          .into(itemView.moviePosterImageView)
-
-      itemView.setOnClickListener {
-        movie?.let {
-          moviesClickListener.onMovieClicked(it)
-        }
-      }
+    interface MoviesClickListener {
+        fun onMovieClicked(movie: Movie)
     }
-  }
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-    val itemView = LayoutInflater.from(parent.context).inflate(
-        R.layout.line_item_movie,
-        parent,
-        false
-    )
+    val requestOptions: RequestOptions by lazy {
+        RequestOptions()
+                .error(R.drawable.no_internet)
+                .placeholder(R.drawable.ic_movie_placeholder)
+    }
 
-    return MovieViewHolder(itemView)
-  }
+    fun updateData(newData: List<Movie?>) {
+        data.clear()
+        data.addAll(newData)
+        notifyDataSetChanged()
+    }
 
-  override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-    holder.bind(data[position])
-  }
+    inner class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-  override fun getItemCount() = data.size
+        fun bind(movie: Movie?) {
+            itemView.titleTextView.text = movie?.title
+            itemView.overviewTextView.text = movie?.overview
 
-  companion object {
-    const val POSTER_IMAGE_PATH_PREFIX = "https://image.tmdb.org/t/p/w300"
-  }
+            Glide.with(itemView.context)
+                    .applyDefaultRequestOptions(requestOptions)
+                    .load("${POSTER_IMAGE_PATH_PREFIX}${movie?.posterPath}")
+                    .into(itemView.moviePosterImageView)
+
+            itemView.setOnClickListener {
+                movie?.let {
+                    moviesClickListener.onMovieClicked(it)
+                }
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(
+                R.layout.line_item_movie,
+                parent,
+                false
+        )
+
+        return MovieViewHolder(itemView)
+    }
+
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
+        holder.bind(data[position])
+    }
+
+    override fun getItemCount() = data.size
+
+    companion object {
+        const val POSTER_IMAGE_PATH_PREFIX = "https://image.tmdb.org/t/p/w300"
+    }
 }

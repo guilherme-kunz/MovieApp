@@ -42,9 +42,9 @@ import retrofit2.http.Query
 
 interface MovieService {
 
-  @GET("movie/popular")
-  fun fetchPopularMoviesAsync(): Deferred<Response<MoviesResponse>>
+    @GET("movie/popular")
+    fun fetchPopularMoviesAsync(): Deferred<Response<MoviesResponse>>
 
-  @GET("search/movie")
-  fun fetchMovieByQueryAsync(@Query("query") query: String): Deferred<Response<MoviesResponse>>
+    @GET("search/movie")
+    fun fetchMovieByQueryAsync(@Query("query") query: String): Deferred<Response<MoviesResponse>>
 }

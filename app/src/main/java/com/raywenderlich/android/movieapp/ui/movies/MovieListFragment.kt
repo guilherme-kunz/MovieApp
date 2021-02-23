@@ -119,55 +119,55 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list),
         })
     }
 
-        private fun initialiseUIElements() {
-            searchEditText.addTextChangedListener(searchTextWatcher)
-            movieAdapter = MovieAdapter(this)
-            moviesRecyclerView.apply {
-                adapter = movieAdapter
-                hasFixedSize()
+    private fun initialiseUIElements() {
+        searchEditText.addTextChangedListener(searchTextWatcher)
+        movieAdapter = MovieAdapter(this)
+        moviesRecyclerView.apply {
+            adapter = movieAdapter
+            hasFixedSize()
+        }
+    }
+
+    override fun onMovieClicked(movie: Movie) {
+        mainViewModel.onMovieClicked(movie)
+    }
+
+    private fun onMovieLoadingStateChanged(state: MovieLoadingState) {
+        when (state) {
+            MovieLoadingState.LOADING -> {
+                statusButton.visibility = View.GONE
+                moviesRecyclerView.visibility = View.GONE
+                loadingProgressBar.visibility = View.VISIBLE
             }
-        }
-
-        override fun onMovieClicked(movie: Movie) {
-            mainViewModel.onMovieClicked(movie)
-        }
-
-        private fun onMovieLoadingStateChanged(state: MovieLoadingState) {
-            when (state) {
-                MovieLoadingState.LOADING -> {
-                    statusButton.visibility = View.GONE
-                    moviesRecyclerView.visibility = View.GONE
-                    loadingProgressBar.visibility = View.VISIBLE
-                }
-                MovieLoadingState.LOADED -> {
-                    connectivityLiveData.value?.let {
-                        if (it) {
-                            statusButton.visibility = View.GONE
-                            moviesRecyclerView.visibility = View.VISIBLE
-                        } else {
-                            statusButton.visibility = View.VISIBLE
-                            moviesRecyclerView.visibility = View.GONE
-                        }
+            MovieLoadingState.LOADED -> {
+                connectivityLiveData.value?.let {
+                    if (it) {
+                        statusButton.visibility = View.GONE
+                        moviesRecyclerView.visibility = View.VISIBLE
+                    } else {
+                        statusButton.visibility = View.VISIBLE
+                        moviesRecyclerView.visibility = View.GONE
                     }
-                    loadingProgressBar.visibility = View.GONE
                 }
-                MovieLoadingState.ERROR -> {
-                    statusButton.visibility = View.VISIBLE
-                    context?.let {
-                        statusButton.setCompoundDrawables(
-                                null, ContextCompat.getDrawable(it, R.drawable.no_internet), null,
-                                null)
-                    }
-                    moviesRecyclerView.visibility = View.GONE
-                    loadingProgressBar.visibility = View.GONE
+                loadingProgressBar.visibility = View.GONE
+            }
+            MovieLoadingState.ERROR -> {
+                statusButton.visibility = View.VISIBLE
+                context?.let {
+                    statusButton.setCompoundDrawables(
+                            null, ContextCompat.getDrawable(it, R.drawable.no_internet), null,
+                            null)
                 }
-                MovieLoadingState.INVALID_API_KEY -> {
-                    statusButton.visibility = View.VISIBLE
-                    statusButton.text = getString(R.string.invalid_api_key)
-                    statusButton.setCompoundDrawables(null, null, null, null)
-                    moviesRecyclerView.visibility = View.GONE
-                    loadingProgressBar.visibility = View.GONE
-                }
+                moviesRecyclerView.visibility = View.GONE
+                loadingProgressBar.visibility = View.GONE
+            }
+            MovieLoadingState.INVALID_API_KEY -> {
+                statusButton.visibility = View.VISIBLE
+                statusButton.text = getString(R.string.invalid_api_key)
+                statusButton.setCompoundDrawables(null, null, null, null)
+                moviesRecyclerView.visibility = View.GONE
+                loadingProgressBar.visibility = View.GONE
             }
         }
     }
+}

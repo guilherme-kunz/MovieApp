@@ -40,25 +40,25 @@ import javax.inject.Inject
 
 class MovieRepository @Inject constructor(private val movieService: MovieService) {
 
-  suspend fun fetchPopularMovies(): List<Movie>? {
-    Log.d("TAG", "fetchPopularMovies")
-    val deferredResponse = movieService.fetchPopularMoviesAsync().await()
+    suspend fun fetchPopularMovies(): List<Movie>? {
+        Log.d("TAG", "fetchPopularMovies")
+        val deferredResponse = movieService.fetchPopularMoviesAsync().await()
 
-    return if (deferredResponse.isSuccessful) {
-      deferredResponse.body()?.movies
-    } else {
-      throw Exception()
+        return if (deferredResponse.isSuccessful) {
+            deferredResponse.body()?.movies
+        } else {
+            throw Exception()
+        }
     }
-  }
 
-  suspend fun fetchMovieByQuery(queryText: String): List<Movie>? {
-    val deferredResponse = movieService.fetchMovieByQueryAsync(queryText).await()
+    suspend fun fetchMovieByQuery(queryText: String): List<Movie>? {
+        val deferredResponse = movieService.fetchMovieByQueryAsync(queryText).await()
 
-    return if (deferredResponse.isSuccessful) {
-      deferredResponse.body()?.movies
-    } else {
-      Log.e("TAG", "Please check your API key validity and your internet connection")
-      throw Exception()
+        return if (deferredResponse.isSuccessful) {
+            deferredResponse.body()?.movies
+        } else {
+            Log.e("TAG", "Please check your API key validity and your internet connection")
+            throw Exception()
+        }
     }
-  }
 }
