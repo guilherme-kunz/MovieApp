@@ -11,6 +11,7 @@ Este aplicativo foi desenvolvido seguindo um [Tutorial](https://www.raywenderlic
 ## Bibliotecas utilizadas 
 
 <ul>
+<li><a href="https://developer.android.com/jetpack/androidx/releases/lifecycle">Lifecycle</a> - para a implementação do LiveData e ViewModel</li>
 <li><a href="https://square.github.io/retrofit/">Retrofit</a> - para lidar com recursos relacionados à rede</li>
 <li><a href="https://github.com/bumptech/glide">Glide</a> - biblioteca de carregamento de imagens</li>
 <li><a href="https://developer.android.com/kotlin/coroutines">Coroutines</a> - para gerenciar tarefas de longa duração</li>
